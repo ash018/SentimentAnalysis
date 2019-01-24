@@ -1,0 +1,36 @@
+    {% load static from staticfiles %}
+
+    <title>{% block title %} {{ PageTitle }} {% endblock %}</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static "assets/style/bootstrap.css" %}" />
+    <link type="text/css" rel="stylesheet" href="{% static "assets/syntaxHighlighter/theme.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "assets/style/style.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "assets/style/layout.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "assets/style/syntaxHighlighterOverride.css" %}">
+
+
+
+    <script src="{% static "assets/scripts/jquery.js" %}"></script>
+    <script src="{% static "assets/scripts/es6-promise.js" %}"></script>
+    <script src="{% static "assets/scripts/powerbi.js" %}"></script>
+
+    <script src="{% static "assets/scripts/codesamples.js" %}"></script>
+
+    <script src="{% static "assets/scripts/index.js" %}"></script>
+    <script src="{% static "assets/scripts/utils.js" %}"></script>
+    <script src="{% static "assets/scripts/logger.js" %}"></script>
+    <script src="{% static "assets/scripts/session_utils.js" %}"></script>
+    <script src="{% static "assets/scripts/function_mapping.js" %}"></script>
+
+    <script src="{% static "assets/scripts/report.js" %}"></script>
+
+    <script src="{% static "assets/scripts/step_samples.js" %}"></script>
+    <script src="{% static "assets/scripts/step_embed.js" %}"></script>
+    <script src="{% static "assets/scripts/step_interact.js" %}"></script>
+
+    <script src="{% static "assets/live_showcases/custom_layout/showcase_custom_layout.js" %}"></script>
+    <script src="{% static "assets/live_showcases/bookmarks/showcase_bookmarks.js" %}"></script>

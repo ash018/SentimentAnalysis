@@ -1,0 +1,309 @@
+{% extends "./public/dashboardBase.html" %}
+
+{% load static %}
+
+{% block main_content %}
+
+<script src="{% static 'Assets/js/plugins/dataTables/datatables.min.js' %}"></script>
+
+<div id="page-wrapper" class="gray-bg">
+
+    {% include 'ChurnApp/public/CommonHeadBar.html' %}
+
+    <style type="text/css">
+
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-4">
+            <h2>Home</h2>
+            <ol class="breadcrumb">
+                <li class="active">
+                    <strong>Predictive Modelling</strong>
+                </li>
+            </ol>
+        </div>
+
+        <div class="col-sm-8">
+            <div class="col-sm-8">
+
+            </div>
+
+            <div class="col-sm-2">
+
+            </div>
+
+            <div class="col-sm-2">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Select Machine Learning Model to Measure Performance</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" method="post" enctype="multipart/form-data" action="{% url 'prediction' %}">
+                    {% csrf_token %}
+                         <p>Selected algoritms will be used to predict performance</p>
+                         <div class="form-group"><label class="col-sm-2 control-label">Choose One <br/><small class="text-navy">Custom Algorithms</small></label>
+                            <div class="col-sm-10">
+                                <div class="i-checks"><label> <input type="checkbox" name="algorithm[]" value="DNN" checked=""> <i></i> Deep Neural Network </label></div>
+                                <div class="i-checks"><label> <input type="checkbox" name="algorithm[]" value="SVM" > <i></i> Support Vector Machine </label></div>
+                                <div class="i-checks"><label> <input type="checkbox" name="algorithm[]" value="LRM" > <i></i> Logistic Regression </label></div>
+                                <div class="i-checks"><label> <input type="checkbox" name="algorithm[]" value="DTM" > <i></i> Decision Tree </label></div>
+                            </div>
+                         </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <div class="col-lg-10">
+                                <button class="btn btn-primary pull-left m-t-n-xs" type="submit"><strong>Predict</strong></button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+     {% if predicted_result %}
+     <div class="row">
+            <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Prediction Result: <b>Model Accuracy {{ score }}%</b></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="font-size: 10px;">
+                              <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Prediction</th>
+                                    <th>Outlet</th>
+                                    <th>Tot.Quantity</th>
+                                    <th>Tot.Value</th>
+                                    <th>STD.Quantity</th>
+                                    <th>STD.Value</th>
+                                    <th>AvgTimeDelta</th>
+                                    <th>Recency</th>
+                                    <th>UNQ.Transactions</th>
+                                    <th>UNQ.Items</th>
+                                    <th>UNQ.Locations</th>
+                                    <th>UNQ.Categories</th>
+{#                                    <th>Tot.Quant/UNQ.Transactions</th>#}
+{#                                    <th>Tot.Quant/UNQ.Items</th>#}
+{#                                    <th>Tot.Quant/UNQ.Location</th>#}
+{#                                    <th>Tot.Quant/UNQ.Categories</th>#}
+{#                                    <th>Tot.Value/UNQ.Transactions</th>#}
+{#                                    <th>Tot.Value/UNQ.Items</th>#}
+{#                                    <th>Tot.Value/UNQ.Locations</th>#}
+{#                                    <th>Tot.Value/UNQ.Categories</th>#}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for item in predicted_result %}
+                                    <tr>
+                                        <td>{{ item.UserId }}</td>
+                                        <td>
+                                            {% if item.PredictedResult == 1 %}
+                                                <small class="label label-danger"> Churner</small>
+                                             {% else %}
+                                                <small class="label label-primary"> Non Churner</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ item.Address }}</td>
+                                        <td>{{ item.TotalQuantity}}</td>
+                                        <td>{{ item.TotalValue|floatformat:2 }}</td>
+                                        <td>{{ item.StDevQuantity|floatformat:2 }}</td>
+                                        <td>{{ item.StDevValue|floatformat:2 }}</td>
+                                        <td>{{ item.AvgTimeDelta}}</td>
+                                        <td>{{ item.Recency}}</td>
+                                        <td>{{ item.UniqueTransactionId }}</td>
+                                        <td>{{ item.UniqueItemId }}</td>
+                                        <td>{{ item.UniqueLocation }}</td>
+                                        <td>{{ item.UniqueProductCategory }}</td>
+{#                                        <td>{{ item.TotalQuantityperUniqueTransactionId|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalQuantityperUniqueItemId|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalQuantityperUniqueLocation|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalQuantityperUniqueProductCategory|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalValueperUniqueTransactionId|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalValueperUniqueItemId|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalValueperUniqueLocation|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.TotalValueperUniqueProductCategory|floatformat:2 }}</td>#}
+                                    </tr>
+                                {% endfor %}
+                              </tbody>
+                            </table>
+
+                            {% if predicted_result.has_other_pages %}
+                              <ul class="pagination">
+                                {% if predicted_result.has_previous %}
+                                  <li><a href="?page={{ predicted_result.previous_page_number }}&score={{ score }}">&laquo;</a></li>
+                                {% else %}
+                                  <li class="disabled"><span>&laquo;</span></li>
+                                {% endif %}
+                                {% for i in predicted_result.paginator.page_range %}
+                                  {% if predicted_result.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                  {% else %}
+                                    <li><a href="?page={{ i }}&score={{ score }}">{{ i }}</a></li>
+                                  {% endif %}
+                                {% endfor %}
+                                {% if predicted_result.has_next %}
+                                  <li><a href="?page={{ predicted_result.next_page_number }}&score={{ score }}">&raquo;</a></li>
+                                {% else %}
+                                  <li class="disabled"><span>&raquo;</span></li>
+                                {% endif %}
+                              </ul>
+                            {% endif %}
+
+{#                        <table class="table table-striped table-bordered table-hover dataTables-example" >#}
+{#                            <thead>#}
+{#                            <tr>#}
+{#                                <th>UserId</th>#}
+{#                                <th>Prediction</th>#}
+{#                                <th>Address</th>#}
+{#                                <th>TotalQuantity</th>#}
+{#                                <th>TotalValue</th>#}
+{#                                <th>StDevQuantity</th>#}
+{#                                <th>StDevValue</th>#}
+{#                                <th>AvgTimeDelta</th>#}
+{#                                <th>Recency</th>#}
+{#                                <th>UniqueTransactions</th>#}
+{#                                <th>UniqueItems</th>#}
+{#                                <th>UniqueCategories</th>#}
+{#                                <th>TotalQuantityperUniqueTransactionId</th>#}
+{#                                <th>TotalQuantityperUniqueItemId</th>#}
+{#                                <th>TotalQuantityperUniqueLocation</th>#}
+{#                                <th>TotalQuantityperUniqueProductCategory</th>#}
+{#                                <th>TotalValueperUniqueTransactionId</th>#}
+{#                                <th>TotalValueperUniqueItemId</th>#}
+{#                                <th>TotalValueperUniqueLocation</th>#}
+{#                                <th>TotalValueperUniqueProductCategory</th>#}
+{#                            </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                                {% for item in predicted_result %}#}
+{#                                    <tr>#}
+{#                                        <td>{{ item.0 }}</td>#}
+{#                                        <td>#}
+{#                                            {% if item.20 == 1 %}#}
+{#                                                <small class="label label-danger"> Churner</small>#}
+{#                                             {% else %}#}
+{#                                                <small class="label label-primary"> Non Churner</small>#}
+{#                                            {% endif %}#}
+{#                                        </td>#}
+{#                                        <td>{{ item.1 }}</td>#}
+{#                                        <td>{{ item.2|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.3|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.4|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.5|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.6|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.7|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.8|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.9|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.10|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.11|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.12|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.13|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.14|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.15|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.16|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.17|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.18|floatformat:2 }}</td>#}
+{#                                        <td>{{ item.19|floatformat:2 }}</td>#}
+{#                                    </tr>#}
+{#                                {% endfor %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+
+
+<br>
+{% include 'ChurnApp/public/CommonFooter.html' %}
+
+</div>
+
+
+<script>
+$(document).ready(function()
+{
+    $('.dataTables-example').DataTable({
+        pageLength: 25,
+        responsive: true,
+        dom: '<"html5buttons"B>lTfgitp',
+        buttons: [
+            { extend: 'copy'},
+            {extend: 'csv'},
+            {extend: 'excel', title: 'ExampleFile'},
+            {extend: 'pdf', title: 'ExampleFile'},
+
+            {extend: 'print',
+             customize: function (win){
+                    $(win.document.body).addClass('white-bg');
+                    $(win.document.body).css('font-size', '10px');
+
+                    $(win.document.body).find('table')
+                            .addClass('compact')
+                            .css('font-size', 'inherit');
+            }
+            }
+        ]
+
+    });
+{#    var predicted_result = '{{ predicted_result }}';#}
+{#    console.log(predicted_result);#}
+
+});
+</script>
+
+{% endblock %}

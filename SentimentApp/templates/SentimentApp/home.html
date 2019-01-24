@@ -1,0 +1,190 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+
+<div id="page-wrapper" class="gray-bg">
+
+    {% include 'SentimentApp/public/CommonHeadBar.html' %}
+
+    <style type="text/css">
+        @media screen and (max-width: 1400px) and (min-width: 800px) {
+
+        }
+
+        @media screen and (max-width: 2000px) and (min-width: 1401px) {
+
+        }
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-4">
+            <h2>Home </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li class="active">
+                    <strong>Sentiment Analysis Control Center</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-sm-8">
+
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <a href="{% url 'fbscraping' %}" class="btn-link">
+                            <h2>
+                                Facebook Scraping
+                            </h2>
+                        </a>
+                        <div class="small m-b-xs">
+                            <span class="text-muted"><i class="fa fa-clock-o"></i> 20th September 2017</span>
+                        </div>
+                        <p>
+                            We are excited to bring sentiment analysis with facebook data for you. Click to launch the panel facebook sentiment analysis.
+                        </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Need to see in action:</h5>
+                                <a class="btn btn-primary btn-xs" href="{% url 'fbscraping' %}" type="button">Launch Analytics</a>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-right">
+                                    <h5>Tags:</h5>
+                                    <div> <i class="fa fa-comments-o"> </i> Data Mining </div>
+                                    <i class="fa fa-eye"> </i> Sentiment Prediction
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <a href="twitterscraping.html" class="btn-link">
+                            <h2>
+                                Twitter Scraping
+                            </h2>
+                        </a>
+                        <div class="small m-b-xs">
+                            <span class="text-muted"><i class="fa fa-clock-o"></i> 20th September 2017</span>
+                        </div>
+                        <p>
+                            We are excited to bring sentiment analysis with twitter data for you. Click to launch the panel twitter sentiment analysis.
+                        </p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Need to see in action:</h5>
+                                <a class="btn btn-primary btn-xs" href="twitterscraping.html" type="button">Launch Analytics</a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="small text-right">
+                                    <h5>Tags:</h5>
+                                    <div> <i class="fa fa-comments-o"> </i> Data Mining </div>
+                                    <i class="fa fa-eye"> </i> Sentiment Prediction
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <a href="{% url 'sentimentbattery' %}" class="btn-link">
+                            <h2>
+                                Sentiment Battery
+                            </h2>
+                        </a>
+                        <div class="small m-b-xs">
+                            <span class="text-muted"><i class="fa fa-clock-o"></i> 20th September 2017</span>
+                        </div>
+                        <p>
+                            Using sentiment battery, you can simulate any corpora of text paragraph to justify whether the statement is a positive or
+                            negative or a neutral one. We are incorporating azure text analytics API and some open source sentiment analytics libraries
+                            to judge whether the sentiment of a statement.
+                        </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                     <h5>Need to see in action:</h5>
+                                     <a class="btn btn-primary btn-xs" href="{% url 'sentimentbattery' %}" type="button">Launch Analytics</a>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-right">
+                                    <h5>Tags:</h5>
+                                    <div> <i class="fa fa-comments-o"> </i> Data Mining </div>
+                                    <i class="fa fa-eye"> </i> Sentiment Prediction
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <a href="{% url 'webcrawling' %}" class="btn-link">
+                            <h2>
+                                Web Crawling
+                            </h2>
+                        </a>
+                        <div class="small m-b-xs">
+                            <span class="text-muted"><i class="fa fa-clock-o"></i> 28th Oct 2015</span>
+                        </div>
+                        <p>
+                            Web Crawling feature to extract Bangla news articles from newspaper.
+                        </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                     <h5>Need to see:</h5>
+                                     <a class="btn btn-primary btn-xs" href="{% url 'webcrawling' %}" type="button">Launch Analytics</a>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-right">
+                                    <h5>Tags:</h5>
+                                    <div> <i class="fa fa-comments-o"> </i> Data Mining </div>
+                                    <i class="fa fa-eye"> </i> Sentiment Prediction
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    {% include 'SentimentApp/public/CommonFooter.html' %}
+
+</div>
+
+
+<script>
+var MAGICFIGURE = 49.993;
+$(document).ready(function()
+{
+    WinMove();
+
+});
+
+
+</script>
+
+{% endblock %}

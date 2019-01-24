@@ -1,0 +1,452 @@
+{% extends "./public/CommonBaseLayout.html" %}
+{% load static %}
+{% block main_content %}
+
+<style type="text/css">
+        @media screen and (max-width: 1400px) and (min-width: 800px) {
+            #reportContainer {
+                height: 650px;
+            }
+        }
+
+        @media screen and (max-width: 2000px) and (min-width: 1401px) {
+            #reportContainer {
+                height: 890px;
+            }
+        }
+
+        @media (min-width: 1920px) and (max-width: 2560px)  {
+            #reportContainer {
+                width: 100%;
+                height: 1050px;
+            }
+        }
+
+        @media only screen and (max-width: 600px) {
+            #reportContainer {
+                width: 100%;
+                height: 800px;
+            }
+        }
+
+            #loader {
+                  position: absolute;
+                  left: 50%;
+                  top: 50%;
+                  z-index: 1;
+                  width: 150px;
+                  height: 150px;
+                  margin: -75px 0 0 -75px;
+                  border: 16px solid #f3f3f3;
+                  border-radius: 50%;
+                   border-top: 16px solid blue;
+                    border-right: 16px solid green;
+                    border-bottom: 16px solid red;
+                    border-left: 16px solid pink;
+                  width: 120px;
+                  height: 120px;
+                  -webkit-animation: spin 2s linear infinite;
+                  animation: spin 2s linear infinite;
+            }
+
+            @-webkit-keyframes spin {
+              0% { -webkit-transform: rotate(0deg); }
+              100% { -webkit-transform: rotate(360deg); }
+            }
+
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+
+            /* Add animation to "page content" */
+            .animate-bottom {
+              position: relative;
+              -webkit-animation-name: animatebottom;
+              -webkit-animation-duration: 1s;
+              animation-name: animatebottom;
+              animation-duration: 1s
+            }
+
+            @-webkit-keyframes animatebottom {
+              from { bottom:-100px; opacity:0 }
+              to { bottom:0px; opacity:1 }
+            }
+
+            @keyframes animatebottom {
+              from{ bottom:-100px; opacity:0 }
+              to{ bottom:0; opacity:1 }
+            }
+
+        iframe{
+            border: 0;
+        }
+
+    </style>
+
+    <div id="navbar-content">
+        <div id="navbar">
+            <div id="main-nav-bar">
+                <div id="main-ul-dev">
+                    <ul id="main-ul" class="main-ul">
+                        <li id="main-sample" class="main-li-active">
+                            <div><a href="#">CB Report</a></div>
+                        </li>
+                        <li id="main-showcases" class="main-li-active">
+                            <div><a href="#">Showcase</a></div>
+                            <div class="newSection">NEW</div>
+                        </li>
+                        <li id="main-docs">
+                            <div><a href="{% url 'CBOutletReportLogout' %}">Logout</a></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="contentWrapper">
+            <div id="loader"></div>
+
+            <div class="textAreaControls">
+                <button id="btnFullScreen" class="textAreaControl regular">
+                    Full Screen
+                </button>
+                <button id="btnRefresh" class="textAreaControl regular">
+                    Refresh
+                </button>
+                <button id="btnPrint" class="textAreaControl regular" onclick="elementClicked(this);CopyCode();">
+                     Print
+                </button>
+            </div>
+
+            <div id="sampleContent" class="content" style="">
+
+                <div id="steps-nav-bar">
+                    <div id="steps-ul-dev">
+                        <ul id="pages" class="steps-ul">
+                        </ul>
+                    </div>
+                </div>
+                <div id="reportContainer" style="display:none;"></div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+<script>
+$(document).ready(function()
+{
+    // Get models. models contains enums that can be used.
+    var deviceType = {{ DeviceType }};  //1 means PC, 2 means mobile, 3 means tablet
+    var valid = "{{ pbiEmbeddedToken.EmbedUrl }}";
+    var reportPageList = [];
+    if(valid == "")
+    {
+        $('#reportContainer').append('<br><div class="alert alert-danger">Error in getting the report. Possible reason can be report id changed or new report replaced old existing report caused changing in report id. Please update the old report id with new one.</div>');
+    }
+    else if (typeof valid !== "")
+    {
+        var accessToken = "{{ pbiEmbeddedToken.EmbedToken }}";
+        var embedUrl = "{{ pbiEmbeddedToken.EmbedUrl }}";
+        var embedReportId = "{{ pbiEmbeddedToken.Id }}";
+        var models = window['powerbi-client'].models;
+        if (deviceType === 2 || deviceType === 3)
+        {
+            var config = {
+                type: 'report',
+                tokenType: models.TokenType.Embed,
+                accessToken: accessToken,
+                embedUrl: embedUrl,
+                id: embedReportId,
+                permissions: models.Permissions.All,
+                settings: {
+                        filterPaneEnabled: false,
+                        navContentPaneEnabled: false,
+                        layoutType: models.LayoutType.MobilePortrait
+                    }
+                };
+        }
+        else {
+            var config = {
+            type: 'report',
+            tokenType: models.TokenType.Embed,
+            accessToken: accessToken,
+            embedUrl: embedUrl,
+            id: embedReportId,
+            permissions: models.Permissions.All,
+            settings: {
+                    filterPaneEnabled: false,
+                    navContentPaneEnabled: true,
+                }
+            };
+        }
+
+        // Get a reference to the embedded report HTML element
+        var reportContainer = $('#reportContainer')[0];
+
+        // Embed the report and display it within the div container.
+        var report = powerbi.embed(reportContainer, config);
+
+        //When the report is loaded, Get all pages of that report and populate the dropdown at top with report page names
+        report.on('loaded', function ()
+        {
+            var reportFilterData = [];
+            var pageMissingASMSRFilterData = [];
+            if("{{ IsFilterBySM }}" === "True")
+            {
+                const filter1 = {
+                      $schema: "http://powerbi.com/product/schema#basic",
+                      target: {
+                        table: "vwBOOMUserMapping",
+                        column: "RSMCode"
+                      },
+                      operator: "In",
+                      values: ["{{ RSMCode }}"]
+                };
+                const pageMissingASMSR_filter1 = {
+                      $schema: "http://powerbi.com/product/schema#basic",
+                      target: {
+                        table: "vwBOOMMissingUsers",
+                        column: "RSMCode"
+                      },
+                      operator: "In",
+                      values: ["{{ RSMCode }}"]
+                };
+                reportFilterData.push(filter1);
+                pageMissingASMSRFilterData.push(pageMissingASMSR_filter1);
+            }
+
+            if("{{ IsFilterByZSM }}" === "True")
+            {
+                const filter2 = {
+                      $schema: "http://powerbi.com/product/schema#basic",
+                      target: {
+                        table: "vwBOOMUserMapping",
+                        column: "AMName"
+                      },
+                      operator: "In",
+                      values: ["{{ ZSMCode }}"],
+                };
+                const pageMissingASMSR_filter2 = {
+                      $schema: "http://powerbi.com/product/schema#basic",
+                      target: {
+                        table: "vwBOOMMissingUsers",
+                        column: "AMName"
+                      },
+                      operator: "In",
+                      values: ["{{ ZSMCode }}"],
+                };
+                reportFilterData.push(filter2);
+                pageMissingASMSRFilterData.push(pageMissingASMSR_filter2);
+            }
+
+            if("{{ IsFilterByASM }}" === "True")
+            {
+                const filter3 = {
+                      $schema: "http://powerbi.com/product/schema#basic",
+                      target: {
+                        table: "vwBOOMUserMapping",
+                        column: "TerritoryCode"
+                      },
+                      operator: "In",
+                      values: ["{{ ASMCode }}"],
+                };
+                const pageMissingASMSR_filter3 = {
+                      $schema: "http://powerbi.com/product/schema#basic",
+                      target: {
+                        table: "vwBOOMMissingUsers",
+                        column: "TerritoryCode"
+                      },
+                      operator: "In",
+                      values: ["{{ ASMCode }}"],
+                };
+                reportFilterData.push(filter3);
+                pageMissingASMSRFilterData.push(pageMissingASMSR_filter3);
+            }
+
+            if(reportFilterData.length != 0)
+            {
+                console.log('Filter applied');
+                report.setFilters(reportFilterData)
+                    .catch(function (errors) {
+                        console.log(errors);
+                });
+                // Retrieve the page collection and then set the filters for the first page.
+                // Pay attention that setFilters receives an array.
+                report.getPages()
+                    .then(function (pages)
+                    {
+                      pages[2].setFilters(pageMissingASMSRFilterData)
+                        .then(function () {
+                            Log.logText("Page filter was set.");
+                        })
+                        .catch(function (errors) {
+                            Log.log(errors);
+                        });
+                    })
+                    .catch(function (errors) {
+                        Log.log(errors);
+                    });
+            }
+
+            if("{{ Designation }}" === "admin")     //for admin, no filter. Only show the report
+            {
+                $( "#reportContainer" ).show();
+                $( "#loader" ).hide();
+            }
+            else {
+                setTimeout(function() {
+                    $( "#reportContainer" ).show();
+                    $( "#loader" ).hide();
+                }, 6000);
+            }
+
+
+            report.getPages().then(function (pages)
+            {
+                reportPageList = pages;
+                $("ul#pages").empty();
+                $.each(pages, function (index, value)
+                {
+                    if(index === 0)
+                    {
+                        var active_class = "active steps-li-active";
+                    }
+                    else {
+                        var active_class = ""
+                    }
+                    var item = '<li id="steps-samples">'+
+                                    '<div class="stepsButton">'+
+                                        '<a href="#" class="' + active_class + '" id="' + String(value.displayName).replace(' ', '') + '">' + value.displayName + '</a>' +
+                                    '</div>' +
+                                '</li>' ;
+                    $("ul#pages").append(item);
+                });
+
+                $("ul#pages").on('click', 'a', function(){
+                    selected_reportname = this.text;
+                    console.log(this);
+                    console.log(selected_reportname);
+                    for(var k=0; k < reportPageList.length; k++)
+                    {
+                        if(reportPageList[k].displayName === selected_reportname)
+                        {
+                            reportPageList[k].setActive();
+                            var elem = 'a#' + String(reportPageList[k].displayName).replace(' ', '');
+                            $(elem).removeClass('active steps-li-active');
+                            $(elem).addClass('active steps-li-active');
+                        }
+                        else
+                        {
+                            var elem = 'a#' + String(reportPageList[k].displayName).replace(' ', '');
+                            $(elem).removeClass('active steps-li-active');
+                        }
+
+                    }
+                });
+
+            });
+        });
+
+        //console.log(pages);
+        report.on("swipeEnd", function(event)
+        {
+            const swipeEndEvent = event.detail.swipeEvent;
+            if (swipeEndEvent.currentPosition.x < swipeEndEvent.startPosition.x)
+            {
+                var pagesList = [];
+                //Getting all pages list and insert it into an array
+                report.getPages()
+                    .then(function (pages) {
+                        pages.forEach(function(page) {
+                            var log = page.name + " - " + page.displayName;
+                            pagesList.push(page);
+                            console.log(log);
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                //Finding the active page
+                var activePage;
+                report.getPages()
+                    .then(function (pages)
+                    {
+                        // Retrieve active page.
+                        activePage = pages.find(function (page) {
+                            return page.isActive
+                        });
+                        console.log("Active One is: " + activePage.name);
+                        //Get Active Page Index
+                        var activePageIndex = 0;
+                        for(var i=0; i<pagesList.length; i++)
+                        {
+                            if(pagesList[i].name === activePage.name)
+                            {
+                                activePageIndex = i;
+                                break;
+                            }
+                        }
+                        if(activePageIndex + 1 < pagesList.length)
+                            pagesList[activePageIndex + 1].setActive();
+                        else
+                            pagesList[0].setActive();
+                    })
+                    .catch(function (errors) {
+                        console.log(errors);
+                    });
+            }
+        });
+
+        $("#btnFullScreen").click(function ()
+        {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.fullscreen();
+        });
+
+        $("#btnRefresh").click(function () {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.refresh()
+                .then(function (result) {
+                    console.log("Refreshed");
+                })
+                .catch(function (errors) {
+                    console.log(errors);
+                });
+        });
+
+        $("#report_reload").click(function () {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.reload()
+                .then(function (result) {
+                    Log.logText("Reloaded");
+                })
+                .catch(function (errors) {
+                    Log.log(errors);
+                });
+        });
+
+        $("#btnPrint").click(function () {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.print()
+                .then(function (result) {
+                    console.log(result);
+                })
+                .catch(function (errors) {
+                    console.log(errors);
+                });
+
+        });
+
+    }
+});
+
+</script>
+{% endblock %}

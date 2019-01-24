@@ -1,0 +1,139 @@
+{% extends "./public/dashboardBase.html" %}
+
+{% load static %}
+
+{% block main_content %}
+
+<div id="page-wrapper" class="gray-bg">
+
+    {% include 'ChurnApp/public/CommonHeadBar.html' %}
+
+    <style type="text/css">
+
+    </style>
+
+
+    {% if corrPlot is not none %}
+{#        <div class="row">#}
+{#            <div class="col-sm-12 row">#}
+{#                {{ corrPlot }}#}
+{#                <div class="col-xl-8 col-md-8 col-sm-8">#}
+{#                    <img src="{{ corrPlot }}">#}
+{#                </div>#}
+{#                <div class="col-xl-4 col-md-4 col-sm-4">#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <br>#}
+        <br>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Correlation Plot</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">Config option 1</a>
+                                </li>
+                                <li><a href="#">Config option 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <i class="fa fa-info-circle"></i> Correlation Plot Diagram
+                            </div>
+                            <div class="panel-body">
+                                <p>This image contains exploratory correlation plot to signify the importance of different measures.</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <img src="{{ corrPlot }}" class="img-responsive">
+            </div>
+        </div>
+
+        <br><br>
+
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Box Plot</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">Config option 1</a>
+                                </li>
+                                <li><a href="#">Config option 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <i class="fa fa-info-circle"></i> Box Plot Diagram
+                            </div>
+                            <div class="panel-body">
+                                <p>This image contains exploratory box plot to signify the importance of different measures.</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <img src="{{ boxPlot }}" class="img-responsive">
+            </div>
+        </div>
+    {% else %}
+
+        <div class="middle-box text-center animated fadeInDown">
+            <h1>404</h1>
+            <h3 class="font-bold">Cannot generate image right now. Error occured</h3>
+
+            <div class="error-desc">
+
+            </div>
+        </div>
+
+    {% endif %}
+
+<br>
+{% include 'ChurnApp/public/CommonFooter.html' %}
+
+</div>
+
+
+<script>
+$(document).ready(function()
+{
+
+});
+</script>
+
+{% endblock %}

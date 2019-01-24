@@ -1,0 +1,100 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+
+    <div id="page-wrapper" class="gray-bg">
+        {% include 'ChurnApp/public/CommonHeadBar.html' %}
+        <style type="text/css">
+            /*Laptop and other mid-screen devices*/
+            @media screen and (max-width: 1400px) and (min-width: 800px)
+            {
+                #reportContainer {
+                    height: 650px;
+                }
+
+                iframe#reportContainer {
+                    min-width: 800px;
+                    height: 900px;
+                    margin-left:0px; /* clipping left side of page */
+                    margin-top: -6%;  /* clipping top of page */
+                    overflow:hidden;
+                    resize:none;
+                }
+
+                #nonPowerBI{
+                    min-width: 800px;
+                    height:800px;
+                    overflow:hidden;     /* if you don't want a scrollbar, set to hidden */
+                    min-height:317px;
+                }
+            }
+
+            /*Large Screen Devices*/
+            @media screen and (max-width: 2000px) and (min-width: 1401px)
+            {
+                #reportContainer {
+                    height: 890px;
+                }
+
+                iframe#reportContainer {
+                    min-width: 1401px;
+                    height: 1200px;
+                    margin-top: -4%;  /* clipping top of page */
+                    overflow:hidden;
+                    resize:none;
+                }
+
+                #nonPowerBI{
+                    min-width: 1401px;
+                    height:890px;
+                    overflow:hidden;     /* if you don't want a scrollbar, set to hidden */
+                    min-height:317px;
+                }
+            }
+
+            iframe{
+                border: 0;
+            }
+        </style>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>Tensorboard</h2>
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <strong>Tensorboard Visualization</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-sm-8">
+                <div class="title-action" style="float: right">
+                    <a href="{{ tensorboardurl }}" target="_blank" class="btn btn-info">Full Screen</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-12" id="nonPowerBI">
+{#                <iframe id="iframeContent" src='{{ tensorboardurl }}' width='100%' frameborder='0' scrolling="yes"></iframe>#}
+                <iframe id="reportContainer" src='{{ tensorboardurl}}' width='100%' frameborder='0' scrolling="yes" ></iframe>
+            </div>
+        </div>
+        <br>
+
+    </div>
+
+
+
+<script>
+$(document).ready(function()
+{
+
+});
+
+
+</script>
+
+{% endblock %}

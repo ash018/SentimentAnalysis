@@ -1,0 +1,120 @@
+{% extends "./public/CustomDetectionBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+    <style>
+        .table > tbody > tr > td {
+             vertical-align: middle;
+        }
+        .object-fit_fill { object-fit: fill }
+
+    </style>
+
+    <header id="header">
+        <div class="header-inner">
+            <!-- Header image -->
+            <img src="{% static "resources/images/bg_800.jpg" %}" alt="img" style="opacity: 0.2;">
+            <div class="header-overlay">
+                <div class="header-content">
+                    <!-- Start header content slider -->
+                    <div class="row">
+                        <form class="form-horizontal" method="post" enctype="multipart/form-data" action={% url 'ObjectDetect' %}>
+                            {% csrf_token %}
+
+                            <div class="col-md-7 col-sm-7 col-xs-7">
+                                <div class="about-left" id="preview">
+                                    {% if Output_FileName == 'UploadedMedia/' %}
+                                        <div id="audio-preview">No file selected</div><br/>
+                                    {% else %}
+                                        <div id="audio-preview">
+                                            <a class="example-image-link" href="{% static Output_FileName %}" data-lightbox="example-1">
+                                                <img class="example-image" src="{% static Output_FileName %}" alt="{{ Output_FileName }}" style="width: 700px; height: 400px;" class="img-responsive">
+                                            </a>
+                                        </div><br/>
+                                    {% endif %}
+
+
+                                    {#                                    <div id="image-preview">#}
+                                    {#                                        <label for="image-upload" id="image-label">Choose File</label>#}
+                                    {#                                        <input type="file" name="image-upload" id="image-upload" />#}
+                                    {#                                    </div>#}
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-5 col-sm-5 col-xs-5">
+                                <div class="about-right wow fadeInRight">
+                                    <div class="title-area">
+                                        <h3 style="color: black">Object Detection</h3>
+                                        <span class="tittle-line"></span>
+                                        <p style="color: black">Upload image containing SCJ products and count the
+                                            number of objects in the image.</p>
+                                        <div style="color: black">
+                                            <table class="table">
+                                                {% for key, value in Detected_Objects.items %}
+                                                    <tr>
+                                                        <td><img src="{% static "resources/images/" %}{{ key }}.png" alt="{{ key }}" style="width: 65px" /></td>
+                                                        <td>{{ key }}</td>
+                                                        <td>{{ value }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+
+
+
+                                        </div>
+
+
+                                        <div class="about-btn-area">
+                                            <input type="file" name="image-upload" id="audio-upload"
+                                                   class="btn btn-info btn-lg"/>
+                                            <!--<a href="#" class="button button-default" data-text="SUBMIT"><span>SUBMIT</span></a>-->
+                                        </div>
+                                        <div class="about-btn-area">
+                                            Or <input type="text" name="detection_image_url" placeholder="Image URL"
+                                                      value="" class="form-control">
+                                            <!--<a href="#" class="button button-default" data-text="SUBMIT"><span>SUBMIT</span></a>-->
+                                        </div>
+                                        <div class="about-btn-area">
+                                            <input type="submit" value=" Process " class="btn btn-info btn-lg">
+                                            <!--<a href="#" class="button button-default" data-text="SUBMIT"><span>SUBMIT</span></a>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End header section -->
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.uploadPreview({
+                input_field: "#audio-upload",
+                preview_box: "#audio-preview",
+                label_field: "#audio-preview",    // Default: .image-lab
+                label_default: "Choose File",   // Default: Choose File
+                label_selected: "",  // Default: Change File
+                no_label: false
+            });
+        });
+
+        {#image_url = '{% static Output_FileName %}';#}
+        {#$('#audio-preview').css("background-image", "url(" + image_url + ")");#}
+        {#$('#audio-preview').css("background-size", "cover");#}
+        {#$('#audio-preview').css("background-position", "center center");#}
+
+    </script>
+
+
+{% endblock %}
+
+
+

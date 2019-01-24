@@ -1,0 +1,218 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'MotorRegistrationApp/public/CommonHeadBar.html' %}
+
+        <style type="text/css">
+        </style>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>Yamaha Registration Management Portal</h2>
+                <ol class="breadcrumb">
+
+                </ol>
+            </div>
+            <div class="col-sm-8">
+
+            </div>
+        </div>
+
+            <div class="ibox-content m-b-sm border-bottom">
+
+                <div class="row">
+                    <form class="form-horizontal" method="post" enctype="multipart/form-data" action={% url 'ManageRegistration' %}>
+                    {% csrf_token %}
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Invoive Date</label>
+                                <div class="input-group date">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input id="date_to" name="invoice_date" type="text" class="form-control" value="{{ InvoiceDate }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-1">
+                            <div class="form-group">
+                                <label class="control-label"><br></label>
+                                <div class="input-group date">
+                                    <button class="btn btn-primary " type="submit"><i class="fa fa-refresh"></i>&nbsp;Refresh</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="actionType" id="actionType" value="FilterByDate">
+                    </form>
+
+                    <div class="col-sm-0">
+                    </div>
+
+
+                    <form class="form-horizontal" method="post" enctype="multipart/form-data" action={% url 'ManageRegistration' %}>
+                    {% csrf_token %}
+                        <div class="col-sm-3 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Select Invoice/Customer</label>
+                                <div class="input-group date">
+                                    <select class="form-control m-b" name="invoice_selected" id="invoice_selected">
+                                        {% for item in Invoices %}
+                                            <option value="{{ item.InvoiceNo }}">{{ item.InvoiceNo }}-{{ item.CustomerName }})</option>
+                                        {% endfor %}
+                                        {% if Invoices|length == 0 %}
+                                            <option value="-1">Select Invoice</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-1">
+                            <div class="form-group">
+                                <label class="control-label"><br></label>
+                                <div class="input-group date">
+                                    <button class="btn btn-warning " type="submit"><i class="fa fa-gear"></i>&nbsp;Process</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="actionType" id="actionType" value="ProcessCustomer">
+                        <input type="hidden" name="invoice_date" value="{{ InvoiceDate }}">
+                        <input type="hidden" name="invoiceno" id="invoiceno" value="">
+                    </form>
+
+                    <div class="col-sm-2"></div>
+
+            </div>
+
+
+        <br>
+        {#<div class="row">#}
+        {#     {% for image in result %}#}
+        {#        <li><a href="#">{{ image.FilePath }}</a></li>#}
+        {#    {% endfor %}#}
+        {#</div>#}
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+
+                    {% if Message|length > 0 %}
+                        <div class="alert alert-info">
+                            <strong>{{ Message }}</strong>
+                        </div>
+                    {% endif %}
+                    {% if RegistrationStatus %}
+                        <div class="ibox float-e-margins">
+
+                            <form class="form-horizontal" method="post" enctype="multipart/form-data" action={% url 'ManageRegistration' %}>
+                            {% csrf_token %}
+                                <div class="ibox-title">
+                                    <h5>Registration Status</h5>
+
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <i class="fa fa-wrench"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-user">
+                                            <li><a href="#">Config option 1</a>
+                                            </li>
+                                            <li><a href="#">Config option 2</a>
+                                            </li>
+                                        </ul>
+                                        <a class="close-link">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <input type="text" class="form-control input-sm m-b-xs" id="filter"
+                                           placeholder="Search in table">
+                                    <table class="table table-stripped" data-page-size="8">
+                                        <thead>
+                                        <tr>
+                                            <th>User Name</th>
+                                            <th>Check List</th>
+                                            <th>Document Name</th>
+                                            <th>Invoice No.</th>
+                                            <th>Updated Date</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        {% for item in RegistrationStatus %}
+                                            <tr class="gradeC">
+                                                <td>{{ item.UserId__UserName }}</td>
+                                                <td>{% if item.Status == "N" %}
+                                                        <input type="checkbox" name="checklist" value="{{ item.RegistrationStatusId }}">
+                                                    {% else %}
+                                                        <input type="checkbox" name="checklist" value="{{ item.RegistrationStatusId }}" checked>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ item.DocumentItemId__DocumentName }}</td>
+                                                <td>{{ item.InvoiceNo }}</td>
+                                                <td>{{ item.EntryDate|date:'Y-m-d H:i' }}</td>
+                                                <input type="hidden" name="invoice_no" value="{{ item.InvoiceNo }}">
+                                            </tr>
+                                        {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" class="btn btn-w-m btn-info">Update</button>
+                                    <input type="hidden" name="actionType" id="actionType" value="UpdateChecklist">
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <!-- Data picker -->
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <!-- Date range picker -->
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
+
+<script>
+    window.CSRF_TOKEN = "{{ csrf_token }}";
+    $(document).ready(function ()
+    {
+
+        $('#date_to').datepicker({
+            autoclose: true,
+            format: "yyyy-mm-dd",
+            todayBtn: true,
+            calendarWeeks: true,
+            autoclose: true,
+            todayHighlight: true,
+            toggleActive: true
+        });
+        $('#date_to').val('{{ InvoiceDate }}');
+        //$("#date_to").datepicker("setDate", new Date());
+
+        $('#invoiceno').val($('#invoice_selected').val());
+        $('#invoice_selected').change(function ()
+        {
+            $('#invoiceno').val($('#invoice_selected').val());
+        });
+
+    });
+
+</script>
+
+{% endblock %}

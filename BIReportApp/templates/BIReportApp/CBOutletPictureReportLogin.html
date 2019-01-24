@@ -1,0 +1,93 @@
+{% extends "./public/CommonBaseLayout.html" %}
+{% load static %}
+{% block main_content %}
+
+
+
+    <div id="navbar-content">
+        <div id="navbar">
+            <div id="main-nav-bar">
+                <div id="main-ul-dev">
+                    <ul id="main-ul" class="main-ul">
+                        <li id="main-sample" class="main-li-active">
+                            <div><a href="{% url 'CBOutletReportLogin' %}">Login</a></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="contentWrapper">
+            <div id="loader"></div>
+
+            <div id="sampleContent" class="content" style="">
+
+                <div id="welcome-text" style="">
+                    <h3>Login with your BOOM credentials</h3>
+                    <br>
+                    {% if message is not None %}
+                        <div class="alert alert-danger">
+                            <strong>{{ message }}</strong>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div id="settings" class="col-md-4">
+                        <div id="report-embed-table" class="embed-table">
+                            <div id="wrapper-settings-div">
+
+                                <form method="post" enctype="multipart/form-data"
+                                      action="{% url 'CBOutletReportLogin' %}">
+                                    {% csrf_token %}
+                                    <div class="spacer"></div>
+                                    <div id="embedModeInput">
+                                        <div class="inputLine">
+                                            <div class="inputLineTitle">Select Role</div>
+                                            <select name="designation" id="designation" class="selectButton">
+                                                <option value="SM" selected>RSM</option>
+                                                <option value="ZSM">ZSM</option>
+                                                <option value="ASM">ASM</option>
+                                                <option value="admin">Admin</option>
+                                            </select><br><br>
+                                        </div>
+
+                                        <div class="inputLine">
+                                            <div class="inputLineTitle">Username</div>
+                                            <input type="text" id="username" name="username" required><br><br>
+                                        </div>
+                                        <div class="inputLine">
+                                            <div class="inputLineTitle">Password</div>
+                                            <input type="text" id="password" name="password" required><br><br>
+                                        </div>
+                                        <div class="inputLine">
+                                            <div class="inputLineTitle"></div>
+                                            <button class="selectButton">Login</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+<script>
+$(document).ready(function()
+{
+
+});
+
+</script>
+{% endblock %}

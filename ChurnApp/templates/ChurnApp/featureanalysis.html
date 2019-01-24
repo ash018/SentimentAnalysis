@@ -1,0 +1,156 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+<script src="{% static 'Assets/js/powerbi.js' %}"></script>
+
+<div id="page-wrapper" class="gray-bg">
+
+    {% include 'ChurnApp/public/CommonHeadBar.html' %}
+
+    <style type="text/css">
+        /*#iframeContent
+        {
+            position:absolute; left: 0; right: 0; bottom: 0; top: 0px;
+        }*/
+
+        @media screen and (max-width: 1400px) and (min-width: 800px) {
+            #reportContainer {
+                height: 650px;
+            }
+        }
+
+        @media screen and (max-width: 2000px) and (min-width: 1401px) {
+            #reportContainer {
+                height: 890px;
+            }
+        }
+        iframe{
+            border: 0;
+        }
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+
+        <div class="col-sm-4">
+            <h2>Feature Analysis</h2>
+            <ol class="breadcrumb">
+                <li class="active">
+                    <strong>Feature Engineering Overview</strong>
+                </li>
+            </ol>
+        </div>
+
+        <div class="col-sm-8">
+            <div class="col-sm-8">
+            </div>
+            <div class="col-sm-2">
+                <div class="title-action" style="float: right">
+                    <button class="btn btn-info" id="report_full_screen" type="button"><i class="icon-fullscreen"></i> Full Screen</button>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="title-action" style="float: right">
+                    <button class="btn btn-warning" id="report_print" type="button"><i class="fa fa-print"></i> Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if pbiEmbeddedToken %}
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="reportContainer"></div>
+            </div>
+        </div>
+        <br>
+    {% else %}
+
+        <div class="middle-box text-center animated fadeInDown">
+            <h1>404</h1>
+            <h3 class="font-bold">No Report Found.</h3>
+
+            <div class="error-desc">
+                You have not selected any report.
+            </div>
+        </div>
+
+    {% endif %}
+
+<br>
+<br>
+    {% include 'ChurnApp/public/CommonFooter.html' %}
+
+</div>
+
+
+<script>
+    $(document).ready(function()
+{
+    var accessToken = "{{ pbiEmbeddedToken.EmbedToken }}";
+
+    // Read embed URL from Model
+    var embedUrl = "{{ pbiEmbeddedToken.EmbedUrl }}";
+
+    // Read report Id from Model
+    var embedReportId = "{{ pbiEmbeddedToken.Id }}";
+
+    // Get models. models contains enums that can be used.
+    var models = window['powerbi-client'].models;
+
+    // Embed configuration used to describe the what and how to embed.
+    // This object is used when calling powerbi.embed.
+    // This also includes settings and options such as filters.
+    // You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Embed-Configuration-Details.
+    var config = {
+        type: 'report',
+        tokenType: models.TokenType.Embed,
+        accessToken: accessToken,
+        embedUrl: embedUrl,
+        id: embedReportId,
+        permissions: models.Permissions.All,
+        settings: {
+            filterPaneEnabled: false,
+            navContentPaneEnabled: true
+        }
+    };
+
+    // Get a reference to the embedded report HTML element
+    var reportContainer = $('#reportContainer')[0];
+
+    // Embed the report and display it within the div container.
+    var report = powerbi.embed(reportContainer, config);
+
+    $("#report_full_screen").click(function()
+    {
+        var embedContainer = $('#reportContainer')[0];
+        report = powerbi.get(embedContainer);
+        report.fullscreen();
+    });
+
+    $("#report_print").click(function()
+    {
+        // Get a reference to the embedded report HTML element
+        var embedContainer = $('#reportContainer')[0];
+
+        // Get a reference to the embedded report.
+        report = powerbi.get(embedContainer);
+
+        // Trigger the print dialog for your browser.
+        report.print()
+            .then(function (result) {
+                console.log(result);
+            })
+            .catch(function (errors) {
+                console.log(errors);
+            });
+
+    });
+
+
+
+});
+</script>
+
+{% endblock %}

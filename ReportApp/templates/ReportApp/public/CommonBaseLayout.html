@@ -1,0 +1,34 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    {% include 'ReportApp/public/CommonHeaderScripts.html' %}
+</head>
+
+<body class="layout layout-vertical layout-left-navigation layout-below-toolbar">
+    <main>
+        <div id="wrapper">
+{#            {% include 'ReportApp/public/LeftNavigationPanel.html' %}#}
+
+            <div class="content-wrapper">
+{#                {% include 'ReportApp/public/CommonHeader.html' %}#}
+
+                <div class="content custom-scrollbar">
+
+                    <div id="server-dashboard" class="page-layout simple full-width">
+                        {% block main_content %}
+
+                        {% endblock %}
+                    </div>
+
+                </div>
+            </div>
+
+            {% include 'ReportApp/public/RightNavigationPanel.html' %}
+
+        </div>
+    </main>
+</body>
+
+</html>

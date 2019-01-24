@@ -1,0 +1,62 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'EnyMachineLearningApp/public/CommonHeadBar.html' %}
+
+        <style type="text/css">
+        </style>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>Welcome to Machine Learning as a Service </h2>
+                <ol class="breadcrumb">
+
+                </ol>
+            </div>
+            <div class="col-sm-8">
+
+            </div>
+        </div>
+
+        <br>
+        {#<div class="row">#}
+        {#     {% for image in result %}#}
+        {#        <li><a href="#">{{ image.FilePath }}</a></li>#}
+        {#    {% endfor %}#}
+        {#</div>#}
+
+        <div id="image_container">
+
+        </div>
+
+
+
+
+    </div>
+
+
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <!-- Data picker -->
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <!-- Date range picker -->
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
+
+    <script>
+
+        $(document).ready(function ()
+        {
+
+
+        });
+
+    </script>
+
+{% endblock %}

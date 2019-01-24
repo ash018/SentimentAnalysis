@@ -1,0 +1,59 @@
+{% load static %}
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                            <span>
+                            <img alt="image" class="img-circle" src="{% static 'Assets/img/profile_small.jpg' %}"/>
+                             </span> <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">{{ request.session.userid }}</strong>
+                             </span> <span class="text-muted text-xs block">Player <b class="caret"></b></span> </span> </a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li><a href="profile.html">Developer</a></li>
+                        <li><a href="contacts.html">Worker</a></li>
+                        <li><a href="mailbox.html">Service Holder</a></li>
+                        <li class="divider"></li>
+                        <li><a href="login.html">Logout</a></li>
+                    </ul>
+                </div>
+                <div class="logo-element">
+                    MIS+
+                </div>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <a href="{% url 'home' %}"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'useractivities' %}active{% endif %}">
+                <a href="{% url 'useractivities' %}"><i class="fa fa-sitemap"></i> <span class="nav-label">User Activities</span></a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'featureanalysis' %}active{% endif %}">
+                <a href="{% url 'featureanalysis' %}"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Feature Engineering</span></a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'exploratoryanalytics' %}active{% endif %}">
+                <a href="{% url 'exploratoryanalytics' %}"><i class="fa fa-delicious"></i> <span class="nav-label">Exploratory Analytics</span></a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'prediction' %}active{% endif %}">
+                <a href="{% url 'prediction' %}"><i class="fa fa-arrow-circle-o-right"></i> <span class="nav-label">Churn Prediction</span></a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'tensorboard' %}active{% endif %}">
+                <a href="{% url 'tensorboard' %}"><i class="fa fa-calculator"></i> <span class="nav-label">Tensorboard</span></a>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == 'tensorboard' %}active{% endif %}">
+                <a href="{% url 'tensorboard' %}"><i class="fa fa-calculator"></i> <span class="nav-label">Tensorboard</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li><a href="{% url 'tensorboard' %}"><i class="fa fa-wpexplorer"></i> <span class="nav-label">Scalars</span></a></li>
+                </ul>
+            </li>
+
+
+        </ul>
+    </div>
+</nav>

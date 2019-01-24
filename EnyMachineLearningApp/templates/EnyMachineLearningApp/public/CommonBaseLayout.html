@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+{% include 'EnyMachineLearningApp/public/CommonHeaderScripts.html' %}
+
+<body class="">
+
+    <div id="wrapper">
+        {% include 'EnyMachineLearningApp/public/LeftNavigationPanel.html' %}
+
+        <div id="page-wrapper" class="gray-bg">
+            {% include 'EnyMachineLearningApp/public/CommonHeader.html' %}
+
+            {% block main_content %}
+
+
+            {% endblock %}
+
+            {% include 'EnyMachineLearningApp/public/CommonFooter.html' %}
+        </div>
+
+    </div>
+
+</body>
+
+</html>

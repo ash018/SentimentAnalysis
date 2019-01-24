@@ -1,0 +1,53 @@
+{% load static %}
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <span>
+                        <img alt="image" class="img-circle" src="{% static "assets/img/a4.jpg" %}"/>
+                     </span>
+
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold">Welcome</strong>
+                            </span>
+                            <span class="text-muted text-xs block">admin</span>
+                        </span>
+                    </a>
+
+                </div>
+                <div class="logo-element">
+                    IN+
+                </div>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == "index" %}active{% endif %}">
+                <a href="{% url 'Home' %}"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Home</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fa fa-pie-chart"></i> <span class="nav-label">Initialize Model</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li><a href="#" target="_blank">Anomaly Detection</a></li>
+                    <li><a href="#" target="_blank">Classification</a></li>
+                    <li><a href="#" target="_blank">Clustering</a></li>
+                    <li>
+                        <a href="#">Regression <span class="fa arrow"></span></a>
+                        <ul class="nav nav-third-level">
+                            <li>
+                                <a href="{% url 'LogisticReg' %}">Logistic Regression</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'LinearReg' %}">Linear Regression</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+
+    </div>
+</nav>

@@ -1,0 +1,126 @@
+{% extends "./public/dashboardBase.html" %}
+
+{% load static %}
+
+{% block main_content %}
+
+<div id="page-wrapper" class="gray-bg">
+
+    {% include 'ChurnApp/public/CommonHeadBar.html' %}
+
+    <style type="text/css">
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+
+        <div class="col-sm-4">
+            <h2>Home</h2>
+            <ol class="breadcrumb">
+                <li class="active">
+                    <strong>Churn Application Workflow</strong>
+                </li>
+            </ol>
+        </div>
+
+        <div class="col-sm-8">
+            <div class="col-sm-8">
+
+            </div>
+
+            <div class="col-sm-2">
+
+            </div>
+
+            <div class="col-sm-2">
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <div class="navy-line"></div>
+            <h1>ChurnApp workflow</h1>
+            <p>Welcome to Churn Application Workflow. Following elements will guide the process of churn application. </p>
+        </div>
+    </div>
+    <div class="row features-block">
+        <div class="col-lg-12">
+            <div id="vertical-timeline" class="vertical-container light-timeline center-orientation">
+
+                <div class="vertical-timeline-block">
+                    <div class="vertical-timeline-icon navy-bg">
+                        <i class="fa fa-briefcase"></i>
+                    </div>
+
+                    <div class="vertical-timeline-content">
+                        <a href="{% url 'useractivities' %}"><h2>Customer Activities Overview</h2></a>
+                        <p>This report demonstrates retail customer footfall behavior, quatity purchased, and expenditure overview of all the outlets. Outlet wise demographical data and churner/nonchurner count is reflected on the report.
+                        Please click the launch report button below to view the report.</p>
+                        <a href="{% url 'useractivities' %}" class="btn btn-primary"> Launch Report</a>
+                        <span class="vertical-date"> Step 1 <br/> <small>Customer Activities Report</small> </span>
+                    </div>
+                </div>
+
+                <div class="vertical-timeline-block">
+                    <div class="vertical-timeline-icon navy-bg">
+                        <i class="fa fa-file-text"></i>
+                    </div>
+
+                    <div class="vertical-timeline-content">
+                        <a href="{% url 'featureanalysis' %}"><h2>Feature Engineering</h2></a>
+                        <p>This report demonstrates feature analytics using customer footfall, quantity and sales data. Furthermore, the report
+                        calculates recency, standared deviation of footfalls, standared deviation of quantity, average time interval between footfalls and many more crucial customer features.
+                        Besides, churner / nonchurner overview has been captured by this rport.
+                        Please click the launch report button below to view the report.</p>
+                        <a href="{% url 'featureanalysis' %}" class="btn btn-primary"> Launch Report</a>
+                        <span class="vertical-date"> Step 2 <br/> <small>Customer Features Report</small> </span>
+                    </div>
+                </div>
+
+                <div class="vertical-timeline-block">
+                    <div class="vertical-timeline-icon navy-bg">
+                        <i class="fa fa-cogs"></i>
+                    </div>
+
+                    <div class="vertical-timeline-content">
+                        <a href="{% url 'exploratoryanalytics' %}"><h2>Exploratory Analytics</h2></a>
+                        <p>This section contains advance analytics with retail customer activities and feature data that will be used by machine learning algorithms
+                        in the next phase to predict churner/nonchurner. Analytics using correlation plot, box plot, error plot, outlier detection, missing value detection etc. have captured by this report.</p>
+                        <a href="{% url 'exploratoryanalytics' %}" class="btn btn-primary"> View Report</a>
+                        <span class="vertical-date"> Step 3 <br/> <small>Exploratory Analytics</small> </span>
+                    </div>
+                </div>
+
+                <div class="vertical-timeline-block">
+                    <div class="vertical-timeline-icon navy-bg">
+                        <i class="fa fa-cogs"></i>
+                    </div>
+
+                    <div class="vertical-timeline-content">
+                        <a href="{% url 'prediction' %}"><h2>Prediction</h2></a>
+                        <p>This report evaluates the dataset and prepare them for prediction by making 10% as traiining dataset and 30% as test dataset.</p>
+                        <a href="{% url 'prediction' %}" class="btn btn-primary"> View Report</a>
+                        <span class="vertical-date"> Step 4 <br/> <small>Prediction</small> </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {% include 'ChurnApp/public/CommonFooter.html' %}
+
+</div>
+
+
+<script>
+$(document).ready(function()
+{
+
+});
+</script>
+
+{% endblock %}

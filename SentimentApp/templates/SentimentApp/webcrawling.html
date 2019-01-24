@@ -1,0 +1,813 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'SentimentApp/public/CommonHeadBar.html' %}
+
+        <style type="text/css">
+            @media screen and (max-width: 1400px) and (min-width: 800px) {
+
+            }
+
+            @media screen and (max-width: 2000px) and (min-width: 1401px) {
+
+            }
+
+            #loading {
+                position: fixed;
+                margin: 0 auto;
+                width: 20%;
+                z-index: 15;
+                top: 50%;
+                left: 40%;
+            }
+            .widget{
+                margin-bottom: 0px;
+                margin-top: 0px;
+            }
+        </style>
+
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>Home </h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>Web Crawling</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-sm-8">
+
+            </div>
+        </div>
+
+        {#  Start: Loader for showing the progress of data collection process#}
+        <div class="col-md-2" id="loading">
+            <div class="ibox-content text-center" style="border: 1px dotted;">
+                <div class="spiner-example" style="height: 50px; padding-top: 10px">
+                    <div class="sk-spinner sk-spinner-three-bounce">
+                        <div class="sk-bounce1"></div>
+                        <div class="sk-bounce2"></div>
+                        <div class="sk-bounce3"></div>
+                    </div>
+                </div>
+                <h5 id="set_status">Process Started</h5>
+            </div>
+        </div>
+        {#  End:  Loader for showing the progress of data collection process#}
+
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+
+                {#  Start :: Top Row containing search text box and positive negative neutral hit count#}
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>Web Crawling Service</h5>
+
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-up"></i>
+                                    </a>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-wrench"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-user">
+                                        <li><a href="#">Config 1</a>
+                                        </li>
+                                        <li><a href="#">Config 2</a>
+                                        </li>
+                                    </ul>
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+
+                                <form class="form-horizontal" method="post" enctype="multipart/form-data"
+                                      action="{{ action }}">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">URL List</label>
+                                        <div class="col-sm-8">
+                                            <textarea name="{{ form.url.name }}" id="{{ form.url.name }}" rows="12"
+                                                      class="form-control"
+                                                      data-length="500">{{ result.formUrlList }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Keyword List</label>
+                                        <div class="col-sm-8">
+                                            <textarea name="{{ form.keyWord.name }}" id="{{ form.keyWord.name }}"
+                                                      rows="6" class="form-control"
+                                                      data-length="500">{{ result.formKeyWordList }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Depth</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" name="{{ form.depth.name }}" id="{{ form.depth.name }}" min="0" max="6" rows="5" class="form-control" value="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"></label>
+
+                                        <div class="col-sm-3">
+                                            <button class="btn btn-primary pull-right m-t-n-xs" type="submit" name="crawl">Start Crawl</button>
+                                        </div>
+
+                                         <div class="col-sm-3">
+                                            <button class="btn btn-primary pull-right m-t-n-xs" name="crawl" id="btnCrawlStop">Stop Crawl</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <h3>Score Matrix</h3>
+                        <table class="table table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-2">Algorithm Scaling</th>
+                                    <th class="col-md-3">Negative</th>
+                                    <th class="col-md-3">Neutral</th>
+                                    <th class="col-md-3">Positive</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td style="vertical-align: middle;">Textblob</td>
+                                    <td class='badge-danger'>-1 &nbsp;&nbsp; to &nbsp;&nbsp; -0.3 </td>
+                                    <td class='badge-warning'>-0.3 &nbsp;&nbsp; to &nbsp;&nbsp; +0.3 </td>
+                                    <td class='badge-primary'>+0.3 &nbsp;&nbsp; to &nbsp;&nbsp; +1.0 </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: middle;">Vader</td>
+                                    <td class='badge-danger'>-1 &nbsp;&nbsp; to &nbsp;&nbsp; -0.3 </td>
+                                    <td class='badge-warning'>-0.3 &nbsp;&nbsp; to &nbsp;&nbsp; +0.3 </td>
+                                    <td class='badge-primary'>+0.3 &nbsp;&nbsp; to &nbsp;&nbsp; +1.0 </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: middle;">Google</td>
+                                    <td class='badge-danger'>-1 &nbsp;&nbsp; to &nbsp;&nbsp; -0.3 </td>
+                                    <td class='badge-warning'>-0.3 &nbsp;&nbsp; to &nbsp;&nbsp; +0.3 </td>
+                                    <td class='badge-primary'>+0.3 &nbsp;&nbsp; to &nbsp;&nbsp; +1.0 </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: middle;">Stanford NLTK</td>
+                                    <td class='badge-danger'>0 &nbsp;&nbsp; to &nbsp;&nbsp; 1 </td>
+                                    <td class='badge-warning'>2</td>
+                                    <td class='badge-primary'>3 &nbsp;&nbsp; to &nbsp;&nbsp; 4 </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: middle;">Azure</td>
+                                    <td class='badge-danger'>0 &nbsp;&nbsp; to &nbsp;&nbsp; +0.4 </td>
+                                    <td class='badge-warning'>+0.4 &nbsp;&nbsp; to &nbsp;&nbsp; +0.6 </td>
+                                    <td class='badge-primary'>+0.6 &nbsp;&nbsp; to &nbsp;&nbsp; 1 </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    {#  Display Result of different algorithms  #}
+                    <div class="col-lg-6 col-md-6">
+                        <div class="row">
+                            <div class="">
+                                <table class="table table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-2">Algorithm</th>
+                                            <th class="col-md-3">Positive</th>
+                                            <th class="col-md-3">Neutral</th>
+                                            <th class="col-md-3">Negative</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {#  TextBlob  Result #}
+                                        <tr>
+                                            <td style="vertical-align: middle;">Textblob Result</td>
+                                            <td>
+                                                <div class="widget style1 navy-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-up fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Positive</h3>
+                                                            <h2 class="font-bold" id="textblob_positive_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="widget style1 yellow-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-tack fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Neutral</h3>
+                                                            <h2 class="font-bold" id="textblob_neutral_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="widget style1 red-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-down fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Negative</h3>
+                                                            <h2 class="font-bold" id="textblob_negative_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        {#  Vader  Result #}
+                                        <tr>
+                                            <td style="vertical-align: middle;">Vader Result</td>
+                                            <td>
+                                                <div class="widget style1 navy-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-up fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Positive</h3>
+                                                            <h2 class="font-bold" id="vader_positive_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="widget style1 yellow-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-tack fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Neutral</h3>
+                                                            <h2 class="font-bold" id="vader_neutral_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="widget style1 red-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-down fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Negative</h3>
+                                                            <h2 class="font-bold" id="vader_negative_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                        {#  Google  Result #}
+                                        <tr>
+                                            <td style="vertical-align: middle;">Google NLP Result</td>
+                                            <td>
+                                                <div class="widget style1 navy-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-up fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Positive</h3>
+                                                            <h2 class="font-bold" id="googleNLP_positive_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="widget style1 yellow-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-tack fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Neutral</h3>
+                                                            <h2 class="font-bold" id="googleNLP_neutral_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="widget style1 red-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-down fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Negative</h3>
+                                                            <h2 class="font-bold" id="googleNLP_negative_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        {#  Stanford NLTK Result #}
+                                        <tr>
+                                            <td style="vertical-align: middle;">Stanford NLTK Result</td>
+                                            <td>
+                                                <div class="widget style1 navy-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-up fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Positive</h3>
+                                                            <h2 class="font-bold" id="stanfordCoreNLP_positive_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="widget style1 yellow-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-tack fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Neutral</h3>
+                                                            <h2 class="font-bold" id="stanfordCoreNLP_neutral_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="widget style1 red-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-down fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Negative</h3>
+                                                            <h2 class="font-bold" id="stanfordCoreNLP_negative_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                        {#  Azure Result #}
+                                        <tr>
+                                            <td style="vertical-align: middle;">Azure Result</td>
+                                            <td>
+                                                <div class="widget style1 navy-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-up fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Positive</h3>
+                                                            <h2 class="font-bold" id="azure_positive_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="widget style1 yellow-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-tack fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Neutral</h3>
+                                                            <h2 class="font-bold" id="azure_neutral_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="widget style1 red-bg">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <i class="fa fa-thumbs-down fa-4x"></i>
+                                                        </div>
+                                                        <div class="col-xs-8 text-right">
+                                                            <h3 class="font-bold no-margins">Negative</h3>
+                                                            <h2 class="font-bold" id="azure_negative_count">0</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                {#Start : Web Crawled scraped Data in the table #}
+                <div class="row">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Search Result </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <i class="fa fa-wrench"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="liveTableData">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Keyword</th>
+                                                    <th>URL</th>
+                                                    <th>Depth</th>
+                                                    <th class="col-md-2">Text</th>
+                                                    <th class="col-md-4">Translated Text</th>
+                                                    <th class="col-md-2">Time</th>
+                                                    <th colspan="5">Sentiment</th>
+                                                </tr>
+                                            </thead>
+
+                                            <thead>
+                                                <tr>
+                                                    <th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+                                                    <th>Textblob</th>
+                                                    <th>Vader</th>
+                                                    <th>Google</th>
+                                                    <th>Stanford</th>
+                                                    <th>Azure</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                            {#                                            {% if result.result is not None %}#}
+                                            {#                                                {% for dataset in result.result %}#}
+                                            {#                                                    {% for data in dataset %}#}
+                                            {#                                                        <tr>#}
+                                            {#                                                            <td>{{ data.depth }}</td>#}
+                                            {#                                                            <td><a href="{{ data.url }}" target="_blank" >{{ data.url|slice:"0:80" }}...</a></td>#}
+                                            {#                                                            <td>{{ data.keyWord }}</td>#}
+                                            {#                                                            <td>0.2</td>#}
+                                            {#                                                        </tr>#}
+                                            {#                                                    {% endfor %}#}
+                                            {#                                                {% endfor %}#}
+                                            {#                                            {% endif %}#}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#End : Web Crawled scraped Data in the table #}
+
+
+                </div>
+
+
+
+        </div>
+
+
+        {% include 'SentimentApp/public/CommonFooter.html' %}
+
+    </div>
+
+
+    <script>
+        var azure_positive = 0, azure_negative = 0, azure_neutral = 0, textblob_positive = 0, vader_negative = 0, vader_neutral = 0, vader_positive = 0, textblob_negative = 0, textblob_neutral = 0, total = 0;
+        var googleNLP_positive = 0, googleNLP_negative = 0, googleNLP_neutral = 0;
+        var stanfordCoreNLP_positive = 0, stanfordCoreNLP_negative = 0, stanfordCoreNLP_neutral = 0;
+        var itemCollected = 0;
+        var crawlCounter = 1;
+        var index = 0, historyKey = '';
+        var timer;
+        $(function () 
+        {
+            $("#loading").hide();
+            var isEmptyTopic = InitializeUI();
+
+            GetAjaxCrawlerResult( {{ result.firtsTimeLoad }} );
+
+{#                $("#start").on('click', function () {#}
+{#                    var isEmptyTopic = InitializeUI();#}
+{#                    if (isEmptyTopic)#}
+{#                        return false;#}
+{##}
+{#                    GetAjaxCrawlerResult();#}
+{##}
+{#                });#}
+
+            function GetAjaxCrawlerResult(firtTimePageLoad)
+            {
+                if(!firtTimePageLoad)
+                {
+                    $("#loading").show();
+                    $('#set_status').html("Web Crawling Started...");
+                    $("#btnCrawlStop").prop("disabled", false);
+                    $("#start").prop("disabled", true);
+                    historyKey = '{{ result.historyKey }}';
+                    timer = setInterval(function () {
+                        $.ajax({
+                            url: 'GetWebCrawlerStatus/',
+                            type: 'GET',
+                             data: {
+                                'index': index,
+                                'historyKey': historyKey
+                            },
+                            dataType: 'json',
+                            success: function (data)
+                            {
+                                index = data[0].index;
+                                console.log(index);
+                                console.log(data[0].status);
+                                if (data[0].status)
+                                {
+                                    AppendToDataTable(data[0].value, data[0].score);
+                                }
+                                else
+                                {
+                                    StopCrawler();
+                                }
+                            }
+                        });
+                    }, 5000);
+                }
+            }
+    
+            $('#btnCrawlStop').click(function ()
+            {
+                StopCrawler();
+                $.ajax({
+                        url: 'StopScrapydJob/',
+                        data: 'source=WebCrawl' ,
+                        type: 'GET',
+                        success: function (data)
+                        {
+                            console.log("Job stopped successfully");
+                        }
+                });
+            });
+    
+            function StopCrawler()
+            {
+                $("#loading").hide();
+                $("#start").prop("disabled", false);
+                $("#btnCrawlStop").prop("disabled", true);
+                clearInterval(timer);
+            }
+
+            function InitializeUI()
+            {
+                $('#vader_positive_count').html("0");
+                $('#vader_negative_count').html("0");
+                $('#vader_neutral_count').html("0");
+                $('#textblob_positive_count').html("0");
+                $('#textblob_negative_count').html("0");
+                $('#textblob_neutral_count').html("0");
+                $('#azure_positive_count').html("0");
+                $('#azure_negative_count').html("0");
+                $('#azure_neutral_count').html("0");
+                $('#googleNLP_positive_count').html("0");
+                $('#googleNLP_negative_count').html("0");
+                $('#googleNLP_neutral_count').html("0");
+                $('#stanfordCoreNLP_positive_count').html("0");
+                $('#stanfordCoreNLP_negative_count').html("0");
+                $('#stanfordCoreNLP_neutral_count').html("0");
+                $("#liveTableData > tbody").html("");
+                $("#loading").hide();
+                $('#set_status').html("Web Crawling Not Started...");
+                //$("#start").prop("disabled", true);
+                $("#btnCrawlStop").prop("disabled", true);
+                index = 0;
+                historyKey = '';
+                return false;
+            }
+
+            function AppendToDataTable(obj, objScore)
+            {
+                var tableRow;
+                for (var i = 0; i < obj.length; i++)
+                {
+                    if (obj[i] != "" && typeof(obj[i]) != 'undefined')
+                    {
+                        var resultData = obj[i];
+                        var resultScore = objScore[i];
+                        var sentimentVader, sentimentTextBlob, sentimentAzure, sentimentGoogleNLP, sentimentStanfordCoreNLP;
+                        console.log(resultData);
+                        console.log(resultScore);
+                        if (String(resultScore[0].ScoreTextBlob.value) == "positive") {
+                            textblob_positive++;
+                            //sentimentTextBlob = "<small class='badge badge-primary'>Positive</small>";
+                            sentimentTextBlob = "<td class='badge-primary'>Positive:"+String(resultScore[0].ScoreTextBlob.score)+"</td>";
+                        }
+                        else if (String(resultScore[0].ScoreTextBlob.value) == "negative") {
+                            if(String(resultScore[0].ScoreTextBlob.score) != "-1000.0") {
+                                textblob_negative++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentTextBlob = "<td class='badge-danger'>Negative:" + String(resultScore[0].ScoreTextBlob.score) + "</td>";
+                            }else{
+                                sentimentTextBlob = "<td class='badge-plain label-plain'> N/A </td>";
+                            }
+                        }
+                        else if (String(resultScore[0].ScoreTextBlob.value) == "neutral") {
+
+                            textblob_neutral++;
+                            //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                            sentimentTextBlob = "<td class='badge-warning'>Neutral:" + String(resultScore[0].ScoreTextBlob.score) + "</td>";
+
+                        }
+
+                        if (String(resultScore[0].ScoreVader.value) == "positive") {
+                            vader_positive++;
+                            //sentimentVader = "<small class='badge badge-warning'>Neutral</small>";
+                            sentimentVader = "<td class='badge-primary'>Positive:"+String(resultScore[0].ScoreVader.score)+"</td>";
+                        }
+                        else if (String(resultScore[0].ScoreVader.value) == "negative") {
+
+                             if(String(resultScore[0].ScoreVader.score) != "-1000.0") {
+                                vader_negative++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentVader = "<td class='badge-danger'>Negative:" + String(resultScore[0].ScoreVader.score) + "</td>";
+                            }else{
+                                sentimentVader = "<td class='badge-plain label-plain'> N/A </td>";
+                            }
+                        }
+                        else if (String(resultScore[0].ScoreVader.value) == "neutral") {
+
+                            vader_neutral++;
+                            //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                            sentimentVader = "<td class='badge-warning'>Neutral:" + String(resultScore[0].ScoreVader.score) + "</td>";
+
+
+                        }
+
+                        if (String(resultScore[0].ScoreAzure.value) == "positive") {
+                            azure_positive++;
+                            //sentimentAzure = "<small class='badge badge-primary'>Positive</small>";
+                            sentimentAzure = "<td class='badge-primary'>Positive:"+String(resultScore[0].ScoreAzure.score)+"</td>";
+                        }
+                        else if (String(resultScore[0].ScoreAzure.value) == "negative") {
+
+                            if(String(resultScore[0].ScoreAzure.score) != "-1000.0") {
+                                azure_negative++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentAzure = "<td class='badge-danger'>Negative:" + String(resultScore[0].ScoreAzure.score) + "</td>";
+                            }else{
+                                sentimentAzure = "<td class='badge-plain label-plain'> N/A </td>";
+                            }
+                        }
+                        else if (String(resultScore.ScoreAzure.value) == "neutral") {
+
+                                azure_neutral++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentAzure = "<td class='badge-warning'>Neutral:" + String(resultScore[0].ScoreAzure.score) + "</td>";
+
+                        }
+
+                        if (String(resultScore[0].ScoreGoogleNLP.value) == "positive") {
+                            googleNLP_positive++;
+                            //sentimentTextBlob = "<small class='badge badge-primary'>Positive</small>";
+                            sentimentGoogleNLP = "<td class='badge-primary'>Positive:"+String(resultScore[0].ScoreGoogleNLP.score)+"</td>";
+                        }
+                        else if (String(resultScore[0].ScoreGoogleNLP.value) == "negative") {
+
+                            if(String(resultScore[0].ScoreGoogleNLP.score) != "-1000.0") {
+                                googleNLP_negative++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentGoogleNLP = "<td class='badge-danger'>Negative:" + String(resultScore[0].ScoreGoogleNLP.score) + "</td>";
+                            }else{
+                                sentimentGoogleNLP = "<td class='badge-plain label-plain'> N/A </td>";
+                            }
+                        }
+                        else if (String(resultScore[0].ScoreGoogleNLP.value) == "neutral") {
+
+                                googleNLP_neutral++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentGoogleNLP = "<td class='badge-warning'>Neutral:" + String(resultScore[0].ScoreGoogleNLP.score) + "</td>";
+
+                        }
+
+                        if (String(resultScore[0].ScoreStanfordCoreNLP.value) == "positive") {
+                            stanfordCoreNLP_positive++;
+                            //sentimentTextBlob = "<small class='badge badge-primary'>Positive</small>";
+                            sentimentStanfordCoreNLP = "<td class='badge-primary'>Positive:"+String(resultScore[0].ScoreStanfordCoreNLP.score)+"</td>";
+                        }
+                        else if (String(resultScore[0].ScoreStanfordCoreNLP.value) == "negative") {
+
+                            if(String(resultScore[0].ScoreStanfordCoreNLP.score) != "-1000.0") {
+                                stanfordCoreNLP_negative++;
+                                //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                                sentimentStanfordCoreNLP = "<td class='badge-danger'>Negative:" + String(resultScore[0].ScoreStanfordCoreNLP.score) + "</td>";
+                            }else{
+                                sentimentStanfordCoreNLP = "<td class='badge-plain label-plain'> N/A </td>";
+                            }
+                        }
+                        else if (String(resultScore[0].ScoreStanfordCoreNLP.value) == "neutral") {
+
+                            stanfordCoreNLP_neutral++;
+                            //sentimentAzure = "<small class='badge badge-warning'>Neutral</small>";
+                            sentimentStanfordCoreNLP = "<td class='badge-warning'>Neutral:" + String(resultScore[0].ScoreStanfordCoreNLP.score) + "</td>";
+
+
+                        }
+
+                        console.log(sentimentTextBlob + "," + sentimentVader + "," + sentimentAzure+ "," + sentimentGoogleNLP+ "," + sentimentStanfordCoreNLP)
+
+                        tableRow = "<tr><td>" + String(crawlCounter) + "</td><td>" + String(resultData.keyWord) + "</td><td>"
+                            + String(resultData.depth) + "</td><td>"
+                            + "<a href='" + String(resultData.url) + "' target='_blank'>URL</a></td><td>"
+                            + String(resultData.title) + "</td><td>"
+                            + String(resultData.translatedText) + "</td><td>"
+                            + String(resultData.entryTime) + "</td>" ;
+                        tableRow += String(sentimentTextBlob);
+                        tableRow += String(sentimentVader);
+                        tableRow += String(sentimentGoogleNLP);
+                        tableRow += String(sentimentStanfordCoreNLP);
+                        tableRow += String(sentimentAzure) + "</tr>";
+                            //+ "<b>TextBlob:</b>  " + sentimentTextBlob + "<b> Vader:</b> " + sentimentVader + "<b> Azure:</b> " + sentimentAzure + "</td></tr>";
+                        console.log(tableRow);
+                        $("#liveTableData > tbody").append(tableRow);
+                        crawlCounter++;
+                    }
+                }
+
+                $('#vader_positive_count').html(String(vader_positive));
+                $('#vader_negative_count').html(String(vader_negative));
+                $('#vader_neutral_count').html(String(vader_neutral));
+                $('#textblob_positive_count').html(String(textblob_positive));
+                $('#textblob_negative_count').html(String(textblob_negative));
+                $('#textblob_neutral_count').html(String(textblob_neutral));
+                $('#azure_positive_count').html(String(azure_positive));
+                $('#azure_negative_count').html(String(azure_negative));
+                $('#azure_neutral_count').html(String(azure_neutral));
+                $('#googleNLP_positive_count').html(String(googleNLP_positive));
+                $('#googleNLP_negative_count').html(String(googleNLP_negative));
+                $('#googleNLP_neutral_count').html(String(googleNLP_neutral));
+                $('#stanfordCoreNLP_positive_count').html(String(stanfordCoreNLP_positive));
+                $('#stanfordCoreNLP_negative_count').html(String(stanfordCoreNLP_negative));
+                $('#stanfordCoreNLP_neutral_count').html(String(stanfordCoreNLP_neutral));
+                $('#set_status').html("Webcrawling status: " + (crawlCounter -1) + " responses collected..");
+            }
+
+            function Normalizer(value, max, min)
+            {
+                return (value - min) / (max - min);
+            }
+
+            $(window).bind('beforeunload', function(event) {
+                $.ajax({url:"AJX_BrowserCloseEvent/", data: 'source=WebCrawl', type: 'GET', async:false});
+            });
+            $(document).on("submit", "form", function(event){
+                $(window).off('beforeunload');
+            });
+
+        });
+    </script>
+
+{% endblock %}

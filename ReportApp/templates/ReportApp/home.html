@@ -1,0 +1,76 @@
+{% extends "./public/CommonBaseLayout.html" %}
+{% load static %}
+{% block main_content %}
+
+<!-- CONTENT -->
+<div class="page-content p-4 p-sm-6">
+    <!-- CONTACT LIST -->
+    <div class="contacts-list card">
+
+        <!-- CONTACT LIST HEADER -->
+        <div class="contacts-list-header p-4">
+
+            <div class="row no-gutters align-items-center justify-content-between">
+
+                <div class="list-title text-muted">
+                    My Reports
+                </div>
+
+                <button type="button" class="btn btn-icon">
+                    <i class="icon icon-sort-alphabetical"></i>
+                </button>
+            </div>
+
+        </div>
+        <!-- / CONTACT LIST HEADER -->
+
+        <!-- CONTACT ITEM -->
+        {% for item in reportList %}
+            <div class="contact-item ripple row no-gutters align-items-center py-2 px-3 py-sm-4 px-sm-6">
+
+{#                <label class="custom-control custom-checkbox">#}
+{#                    <input type="checkbox" class="custom-control-input" />#}
+{#                    <span class="custom-control-indicator"></span>#}
+{#                </label>#}
+
+{#                <img class="avatar mx-4" alt="Abbott" src="{% static "assets/images/avatars/Abbott.jpg" %}" />#}
+
+                <div class="col text-truncate font-weight-bold"><a href="ShowReport/{{ item.ReportId }}"> {{ item.Title }}</a></div>
+
+                <div class="col email text-truncate px-1 d-none d-xl-flex">
+                    {{ item.ReportDescription }}
+                </div>
+
+                <div class="col phone text-truncate px-1 d-none d-xl-flex">
+
+                </div>
+
+{#                <div class="col job-title text-truncate px-1 d-none d-sm-flex">#}
+{#                    {{ item.GroupId }}#}
+{#                </div>#}
+
+{#                <div class="col company text-truncate px-1 d-none d-sm-flex">#}
+{#                    <a href="ShowReport/{{ item.ReportId }}"> {{ item.ReportId }}</a>#}
+{#                </div>#}
+
+{#                <div class="col-auto actions">#}
+{##}
+{#                    <div class="row no-gutters">#}
+{##}
+{#                        <button type="button" class="btn btn-icon">#}
+{#                            <i class="icon-star"></i>#}
+{#                        </button>#}
+{##}
+{#                        <button type="button" class="btn btn-icon">#}
+{#                            <i class="icon icon-dots-vertical"></i>#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </div>#}
+            </div>
+        <!-- CONTACT ITEM -->
+        {% endfor %}
+    </div>
+    <!-- / CONTACT LIST -->
+</div>
+
+{% endblock %}

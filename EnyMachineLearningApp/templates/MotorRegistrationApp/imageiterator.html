@@ -1,0 +1,54 @@
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        {% for image in result %}
+
+            <div class="col-md-3">
+                <div class="ibox">
+                    <div class="ibox-content product-box">
+
+                        <div class="product-imitation" style="padding: 0;">
+
+                            <div class="column">
+                                <div class="content">
+
+                                    <a class="example-image-link" href="{{ image.FilePath }}" data-lightbox="example-1">
+                                        <img class="example-image" src="{{ image.FilePath }}" alt="{{ image.FilePath }}" width="100%" style="height: 200px" class="img-responsive">
+                                    </a>
+
+{#                                    <img src="{{ image.FilePath }}" alt="SCJ Product" width="100%"#}
+{#                                         style="height: 200px" class="img-responsive">#}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-desc">
+                            Captured On: <small class="text-muted">{{ image.CaptureTimestamp }}</small>
+                            <a href="#" class="product-name">{{ image.CustomerName }}</a>
+
+                            <div class="small m-t-xs">
+                                {{ image.Add1 }}
+                            </div>
+
+                            <form class="form-horizontal" method="post" enctype="multipart/form-data" target="_blank" action={% url 'ObjectDetect' %}>
+                                {% csrf_token %}
+                                <input type="hidden" name="detection_image_url" value="{{ image.FilePath }}">
+                                <button type="submit" class="btn btn-primary btn-xs">Process</button>
+                            </form>
+
+
+{#                            <div class="m-t text-righ">#}
+{##}
+{#                                <a href="#" class="btn btn-xs btn-outline btn-primary">Info <i#}
+{#                                        class="fa fa-long-arrow-right"></i> </a>#}
+{#                            </div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:4 %}
+                </div>
+                <div class="row">
+            {% endif %}
+        {% endfor %}
+        </div>
+
+</div>

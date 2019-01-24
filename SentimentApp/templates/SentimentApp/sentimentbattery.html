@@ -1,0 +1,187 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+<div id="page-wrapper" class="gray-bg">
+
+    {% include 'SentimentApp/public/CommonHeadBar.html' %}
+
+    <style type="text/css">
+        @media screen and (max-width: 1400px) and (min-width: 800px) {
+
+        }
+
+        @media screen and (max-width: 2000px) and (min-width: 1401px) {
+
+        }
+    </style>
+
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-4">
+            <h2>Home </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li class="active">
+                    <strong>Sentiment Battery Service</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-sm-8">
+
+        </div>
+    </div>
+
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+
+
+{#  Start :: Top Row containing search text box and positive negative neutral hit count#}
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Search Topic</h5>
+
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config 1</a>
+                                    </li>
+                                    <li><a href="#">Config 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <form class="form-horizontal" method="post" enctype="multipart/form-data" action="/managepermission">
+                            {% csrf_token %}
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Topic</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control" rows="15" name="paragraph" id="paragraph"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-10 control-label"></label>
+
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-primary pull-right m-t-n-xs" type="submit"  name="process" id="process">Process</button>
+                                    </div>
+                                </div>
+                            </form>
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Result</h5>
+
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config 1</a>
+                                    </li>
+                                    <li><a href="#">Config 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="tabs-container">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#tab-1"> Analyzed Text</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2">JSON Response</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="tab-1" class="tab-pane active">
+                                        <div class="panel-body">
+                                            <strong>Lorem ipsum dolor sit amet, consectetuer adipiscing</strong>
+
+                                            <p>A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. I am alone, and feel the charm of
+                                                existence in this spot, which was created for the bliss of souls like mine.</p>
+
+                                            <p>I am so happy, my dear friend, so absorbed in the exquisite sense of mere tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at
+                                                the present moment; and yet I feel that I never was a greater artist than now. When.</p>
+                                        </div>
+                                    </div>
+                                    <div id="tab-2" class="tab-pane">
+                                        <div class="panel-body">
+                                            <strong>Donec quam felis</strong>
+
+                                            <p>Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                                                and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath </p>
+
+                                            <p>I am alone, and feel the charm of existence in this spot, which was created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite
+                                                sense of mere tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present moment; and yet.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+{#End : Top Row containing search text box and positive negative neutral hit count#}
+
+
+
+        </div>
+
+    </div>
+
+
+    {% include 'SentimentApp/public/CommonFooter.html' %}
+
+</div>
+
+
+
+<script>
+var positive=0, negative=0, neutral=0, total = 0;
+var stopCommand = false;	//command variable for stopping facebook data collection
+var itemCollected = 0;
+var postsCollected = 0;
+var topic, socket;
+var queue = [];
+$(function ()
+{
+
+});
+</script>
+
+
+{% endblock %}

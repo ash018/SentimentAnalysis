@@ -1,0 +1,42 @@
+{% load static %}
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <span>
+                        <img alt="image" class="img-circle" src="{% static "assets/img/a4.jpg" %}"/>
+                     </span>
+
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold">Welcome</strong>
+                            </span>
+                            <span class="text-muted text-xs block">admin</span>
+                        </span>
+                    </a>
+
+                </div>
+                <div class="logo-element">
+                    MIS+
+                </div>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == "ManageRegistration" %}active{% endif %}">
+                <a href="{% url 'ManageRegistration' %}"><i class="fa fa-registered"></i> <span class="nav-label">Registration</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fa fa-user"></i> <span class="nav-label">Customer List</span></a>
+            </li>
+
+            <li class="">
+                <a href="{% url 'Logout' %}"><i class="fa fa-sign-out"></i> <span class="nav-label">Logout</span></a>
+            </li>
+
+
+        </ul>
+
+    </div>
+</nav>
